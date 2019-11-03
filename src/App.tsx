@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+
+type Product = {
+  id: number,
+  name: string,
+  description: string,
+  brand: string,
+  price: string,
+  created_at: string,
+  updated_at: string,
+}
 
 const App: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [Error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/products')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.products) setProducts([]);
+        setProducts(data.products);
+      })
+      .catch(err => setError(err));
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ul>
+      {
+        products.map((p: Product) => (
+          <li key={p.id}>
+            {p.name}
+          </li>
+        ))
+      }
+    </ul>
   );
 }
 
